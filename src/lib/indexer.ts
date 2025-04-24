@@ -37,8 +37,8 @@ import {
 } from "@/lib/utils";
 import getErc20Contract from "@/lib/contracts/erc-20/contract";
 import getErc721Contract from "@/lib/contracts/erc-721/contract";
-import optimismPortal from "@/lib/contracts/optimism-portal2/contract";
-import l1CrossDomainMessenger from "@/lib/contracts/l1-cross-domain-messenger/contract";
+// import optimismPortal from "@/lib/contracts/optimism-portal2/contract";
+// import l1CrossDomainMessenger from "@/lib/contracts/l1-cross-domain-messenger/contract";
 // import l1StandardBridge from "@/lib/contracts/l1-standard-bridge/contract";
 
 const toPrismaBlock = (
@@ -585,14 +585,16 @@ export const indexL1Block = async (blockNumber: bigint, chainId: number) => {
     // ethBridgeInitiatedLogs,
   ] = await Promise.all([
     l1PublicClient.getBlock({ blockNumber }),
-    optimismPortal.getEvents.TransactionDeposited(undefined, {
+    [],
+    [],
+    /* optimismPortal.getEvents.TransactionDeposited(undefined, {
       fromBlock: blockNumber,
       toBlock: blockNumber,
     }),
     l1CrossDomainMessenger.getEvents.SentMessage(undefined, {
       fromBlock: blockNumber,
       toBlock: blockNumber,
-    }),
+    }), */
     /* l1StandardBridge.getEvents.ETHBridgeInitiated(undefined, {
       fromBlock: blockNumber,
       toBlock: blockNumber,
@@ -602,17 +604,17 @@ export const indexL1Block = async (blockNumber: bigint, chainId: number) => {
     logs: transactionDepositedLogs,
   })
     .map((transactionDepositedLog, index) => {
-      const sentMessageLog = sentMessageLogs[index];
+      /* const sentMessageLog = sentMessageLogs[index];
       const gasLimit =
         sentMessageLog?.args.gasLimit ??
-        BigInt(`0x${transactionDepositedLog.args.opaqueData.slice(130, 146)}`);
+        BigInt(`0x${transactionDepositedLog.args.opaqueData.slice(130, 146)}`); */
       return {
         l1BlockNumber: transactionDepositedLog.blockNumber,
         l2TxHash: getL2TransactionHash({ log: transactionDepositedLog }),
         l1TxHash: transactionDepositedLog.transactionHash,
         timestamp,
         l1TxOrigin: getAddress(transactionDepositedLog.args.from),
-        gasLimit,
+        gasLimit: BigInt(0),
       };
     })
     .filter((transactionEnqueued) => transactionEnqueued !== null);
