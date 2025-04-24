@@ -37,7 +37,7 @@ import {
 } from "@/lib/utils";
 import getErc20Contract from "@/lib/contracts/erc-20/contract";
 import getErc721Contract from "@/lib/contracts/erc-721/contract";
-// import optimismPortal from "@/lib/contracts/optimism-portal2/contract";
+import optimismPortal from "@/lib/contracts/optimism-portal2/contract";
 // import l1CrossDomainMessenger from "@/lib/contracts/l1-cross-domain-messenger/contract";
 // import l1StandardBridge from "@/lib/contracts/l1-standard-bridge/contract";
 
@@ -581,17 +581,16 @@ export const indexL1Block = async (blockNumber: bigint, chainId: number) => {
   const [
     { timestamp },
     transactionDepositedLogs,
-    sentMessageLogs,
+    // sentMessageLogs,
     // ethBridgeInitiatedLogs,
   ] = await Promise.all([
     l1PublicClient.getBlock({ blockNumber }),
-    [],
-    [],
-    /* optimismPortal.getEvents.TransactionDeposited(undefined, {
+    optimismPortal.getEvents.TransactionDeposited(undefined, {
       fromBlock: blockNumber,
       toBlock: blockNumber,
     }),
-    l1CrossDomainMessenger.getEvents.SentMessage(undefined, {
+    [],
+    /* l1CrossDomainMessenger.getEvents.SentMessage(undefined, {
       fromBlock: blockNumber,
       toBlock: blockNumber,
     }), */
@@ -603,7 +602,7 @@ export const indexL1Block = async (blockNumber: bigint, chainId: number) => {
   const transactionsEnqueued = extractTransactionDepositedLogs({
     logs: transactionDepositedLogs,
   })
-    .map((transactionDepositedLog, index) => {
+    .map((transactionDepositedLog /*, index */) => {
       /* const sentMessageLog = sentMessageLogs[index];
       const gasLimit =
         sentMessageLog?.args.gasLimit ??
